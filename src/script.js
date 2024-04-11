@@ -72,8 +72,18 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 /**
  * Fireworks
  */
+const textures = [
+  textureLoader.load('/particles/1.png'),
+  textureLoader.load('/particles/2.png'),
+  textureLoader.load('/particles/3.png'),
+  textureLoader.load('/particles/4.png'),
+  textureLoader.load('/particles/5.png'),
+  textureLoader.load('/particles/6.png'),
+  textureLoader.load('/particles/7.png'),
+  textureLoader.load('/particles/8.png'),
+]
 
-const createFirework = (count, position, size, delayStep, tailCount, color) => {
+const createFirework = (count, position, size, delayStep, tailCount, color, texture) => {
   const positions = new Float32Array(count * 3 * tailCount)
   const delays = new Float32Array(count * tailCount)
 
@@ -101,6 +111,7 @@ const createFirework = (count, position, size, delayStep, tailCount, color) => {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
   geometry.setAttribute('aDelay', new THREE.BufferAttribute(delays, 1))
 
+  texture.flipY = false
   const material = new THREE.ShaderMaterial({
     vertexShader: fireworksVertexShader,
     fragmentShader: fireworksFragmentShader,
@@ -110,6 +121,7 @@ const createFirework = (count, position, size, delayStep, tailCount, color) => {
       uSize: new THREE.Uniform(size),
       uProgress: new THREE.Uniform(0),
       uColor: new THREE.Uniform(color),
+      uTexture: new THREE.Uniform(texture),
     },
     transparent: true,
     depthWrite: false,
@@ -133,17 +145,18 @@ const createFirework = (count, position, size, delayStep, tailCount, color) => {
   })
 }
 
-createFirework(100, new THREE.Vector3(0, 0, 0), 0.05, 0.01, 40, new THREE.Color('#8affff'))
+createFirework(100, new THREE.Vector3(0, 0, 0), 0.05, 0.015, 20, new THREE.Color('#8affff'), textures[7])
 
 const createRandomFirework = () => {
   const count = 100
   const position = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1)
   const size = Math.random() * 0.05 + 0.01
-  const delayStep = 0.01
+  const delayStep = 0.015
   const tailCount = Math.floor(Math.random() * 20) + 10
   const color = new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`)
+  const texture = Math.floor(Math.random() * textures.length)
 
-  createFirework(count, position, size, delayStep, tailCount, color)
+  createFirework(count, position, size, delayStep, tailCount, color, textures[texture])
 }
 
 window.addEventListener('click', createRandomFirework)
