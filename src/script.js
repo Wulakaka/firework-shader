@@ -73,7 +73,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Fireworks
  */
 
-const createFirework = (count, size, delayStep, tailCount) => {
+const createFirework = (count, position, size, delayStep, tailCount, color) => {
   const positions = new Float32Array(count * 3 * tailCount)
   const delays = new Float32Array(count * tailCount)
 
@@ -97,8 +97,6 @@ const createFirework = (count, size, delayStep, tailCount) => {
     }
   }
 
-  console.log(positions, delays)
-
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
   geometry.setAttribute('aDelay', new THREE.BufferAttribute(delays, 1))
@@ -111,12 +109,14 @@ const createFirework = (count, size, delayStep, tailCount) => {
       uPixelRatio: new THREE.Uniform(sizes.pixelRatio),
       uSize: new THREE.Uniform(size),
       uProgress: new THREE.Uniform(0),
+      uColor: new THREE.Uniform(color),
     },
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   })
   const firework = new THREE.Points(geometry, material)
+  firework.position.copy(position)
   scene.add(firework)
 
   // Animation
@@ -129,11 +129,24 @@ const createFirework = (count, size, delayStep, tailCount) => {
     value: 2,
     duration: 6,
     ease: 'linear',
-    // onComplete: destroy,
+    onComplete: destroy,
   })
 }
 
-createFirework(100, 0.05, 0.01, 20)
+createFirework(100, new THREE.Vector3(0, 0, 0), 0.05, 0.01, 40, new THREE.Color('#8affff'))
+
+const createRandomFirework = () => {
+  const count = 100
+  const position = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1)
+  const size = Math.random() * 0.05 + 0.01
+  const delayStep = 0.01
+  const tailCount = Math.floor(Math.random() * 20) + 10
+  const color = new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`)
+
+  createFirework(count, position, size, delayStep, tailCount, color)
+}
+
+window.addEventListener('click', createRandomFirework)
 
 /**
  * Animate
