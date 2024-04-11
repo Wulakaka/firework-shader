@@ -26,10 +26,8 @@ void main() {
     newPosition.z += getS(position.z * 0.1, -0.2, progress);
 
     // Scaling 缩放
-    float progressScalingOpen = remap(progress, 0.0, 0.8, 0.0, 1.0);
-    float progressScalingClose = remap(progress, 0.8, 1.0, 1.0, 0.0);
-    float progressScaling = min(progressScalingOpen, progressScalingClose);
-    progressScaling = clamp(progressScaling, 0.0, 1.0);
+    float progressScalingClose = remap(progress, 0.8 - aDelay * 2.0, 1.0, 1.0, 0.0);
+    float progressScaling = clamp(progressScalingClose, 0.0, 1.0);
 
     // Twinkling 闪烁
     float progressTwinkling = remap(progress, 0.2, 0.8, 0.0, 1.0);
@@ -45,7 +43,7 @@ void main() {
 
 
     float sizeDecay = 1.0 - pow(aDelay * 2.0, 1.2);
-    gl_PointSize = uSize * uResolution.y * uPixelRatio * sizeDecay * progressScaling ;
+    gl_PointSize = uSize * uResolution.y * uPixelRatio * sizeDecay * progressScaling;
     gl_PointSize *= 1.0 / -viewPosition.z;
     // Final position
     gl_Position = projectedPosition;
